@@ -17,7 +17,7 @@ SELECT
     CASE
         WHEN type IN ('success', 'failure') THEN COUNT(*)
         WHEN type = 'time_saved_min' THEN SUM(value)
-        WHEN type = 'runtime_ms' THEN ROUND(AVG(value))
+        WHEN type = 'runtime_ms' THEN SUM(value)
     END as count,
     'hour' as periodUnit,
     strftime('%Y-%m-%d %H:00:00', timestamp) as periodStart
@@ -32,7 +32,7 @@ SELECT
     CASE
         WHEN type IN ('success', 'failure') THEN COUNT(*)
         WHEN type = 'time_saved_min' THEN SUM(value)
-        WHEN type = 'runtime_ms' THEN ROUND(AVG(value))
+        WHEN type = 'runtime_ms' THEN SUM(value)
     END as count,
     'day' as periodUnit,
     date(timestamp) as periodStart
@@ -48,7 +48,7 @@ SELECT
     CASE
         WHEN type IN ('success', 'failure') THEN COUNT(*)
         WHEN type = 'time_saved_min' THEN SUM(value)
-        WHEN type = 'runtime_ms' THEN ROUND(AVG(value))
+        WHEN type = 'runtime_ms' THEN SUM(value)
     END as count,
     'week' as periodUnit,
     date(timestamp, 'weekday 0', '-7 days') as periodStart
