@@ -67,3 +67,6 @@ run:
 	s/:limit/$(if $(limit),$(limit),15)/g; \
 	s/:offset/$(if $(offset),$(offset),0)/g" \
 	queries/$(query).sql | sqlite3 $(DB_FILEPATH)
+
+benchmark-latency:
+	@chmod +x ./benchmark-latency.sh && ./benchmark-latency.sh $(DB_FILEPATH)
