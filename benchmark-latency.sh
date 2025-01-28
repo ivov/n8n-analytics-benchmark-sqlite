@@ -2,6 +2,15 @@
 
 DB_PATH=$1
 
+analytics_count=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM analytics;")
+analytics_by_period_count=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM analytics_by_period;")
+
+if [ "$analytics_count" -gt 0 ] || [ "$analytics_by_period_count" -eq 0 ]; then
+  echo "Error: The analytics table must be empty and analytics_by_period must have rows."
+  echo "Please run 'make compact' before benchmarking."
+  exit 1
+fi
+
 UNIT="hour" # TODO: Decide on unit for all runs
 WINDOW="-7 days" # TODO: Decide on window for all runs
 
