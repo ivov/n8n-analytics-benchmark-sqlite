@@ -13,7 +13,7 @@ WITH RECURSIVE generate_rows AS (
 )
 INSERT INTO analytics (workflowId, type, value, timestamp)
 SELECT 
-  (SELECT id FROM workflow_entity ORDER BY RANDOM() LIMIT 1),
+  NULL,
   CASE RANDOM() % 4
     WHEN 0 THEN 'time_saved_min'
     WHEN 1 THEN 'runtime_ms'
