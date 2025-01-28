@@ -6,7 +6,7 @@ setup: nuke create populate
 
 # Remove the benchmark DB.
 nuke:
-	@rm $(DB_FILEPATH)
+	@rm $(DB_FILEPATH) || true
 
 # Start n8n to create an empty sqlite DB with all migrations applied.
 create:
@@ -42,6 +42,7 @@ workflows:
 analytics:
 	@sed 's/:num_events/$(shell echo $(n) | tr -d ',')/g' queries/populate-analytics.sql | sqlite3 $(DB_FILEPATH)
 	@chmod +x randomize-workflow-ids.sh && ./randomize-workflow-ids.sh $(DB_FILEPATH)
+	@cat queries/populate-analytics-metadata.sql | sqlite3 $(DB_FILEPATH)
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics;"); \
 	printf "✅ Total pre-compaction rows in \`analytics\` table: %'d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
