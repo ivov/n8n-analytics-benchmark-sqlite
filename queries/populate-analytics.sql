@@ -1,6 +1,6 @@
 CREATE TABLE analytics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    workflowId VARCHAR(16) NOT NULL REFERENCES workflow_entity(id),
+    workflowId VARCHAR(16) REFERENCES workflow_entity(id) ON DELETE SET NULL, -- preserve analytics on workflow deletion
     type TEXT NOT NULL, -- time_saved_min, runtime_ms, success, failure
     value INTEGER, -- integer for minutes, integer for milliseconds, always 1, always 1
     timestamp TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))
@@ -33,7 +33,7 @@ WHERE type = 'time_saved_min';
 
 CREATE TABLE analytics_by_period (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    workflowId VARCHAR(16) NOT NULL REFERENCES workflow_entity(id),
+    workflowId VARCHAR(16) REFERENCES workflow_entity(id) ON DELETE SET NULL, -- preserve analytics on workflow deletion
     type TEXT NOT NULL, -- see analytics.type
     count INTEGER NOT NULL, -- count of events within aggregation period
     periodUnit TEXT NOT NULL, -- unit of aggregation period: hour, day, week 
