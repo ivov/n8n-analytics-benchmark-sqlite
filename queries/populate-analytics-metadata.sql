@@ -1,6 +1,8 @@
 CREATE TABLE analytics_metadata (
-  workflowId VARCHAR(16) PRIMARY KEY REFERENCES workflow_entity(id),
-  workflowName VARCHAR(128)
+  workflowId VARCHAR(16) UNIQUE NOT NULL,
+  workflowName VARCHAR(128),
+  projectId VARCHAR(36), -- TODO: project table
+  projectName VARCHAR(255)
 );
 
 INSERT INTO analytics_metadata (workflowId, workflowName)
