@@ -59,4 +59,4 @@ compact:
 # Example: `make run query=get-single-total-executions unit=hour window="-7 days"`
 # Example: `make run query=get-single-total-executions unit=hour window="-7 days" workflow=832F64FEB2F71CDE686BB1EDDE88A4FB`
 run:
-	@sed "s/:unit/'$(unit)'/g; s/:window/'$(window)'/g; s/:workflow_id/$(or '$(workflow)',NULL)/g" queries/$(query).sql | sqlite3 $(DB_FILEPATH)
+	@sed "s/:unit/'$(unit)'/g; s/:window/'$(window)'/g; s/:workflow_id/$(if $(workflow),'$(workflow)',NULL)/g" queries/$(query).sql | sqlite3 $(DB_FILEPATH)

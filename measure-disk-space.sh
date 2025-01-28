@@ -11,9 +11,18 @@ for table in $tables; do
   sqlite3 "$db_copy" "DROP TABLE $table;"
 done
 
-pre_vacuum_size=$(stat -f%z "$db_copy")
+get_file_size() {
+    local file="$1"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        stat -f%z "$file"
+    else
+        stat -c%s "$file"
+    fi
+}
+
+pre_vacuum_size=$(get_file_size "$db_copy")
 sqlite3 "$db_copy" "VACUUM;"
-post_vacuum_size=$(stat -f%z "$db_copy")
+post_vacuum_size=$(get_file_size "$db_copy")
 
 total_analytics=$(sqlite3 "$db_copy" "SELECT COUNT(*) FROM analytics;")
 total_analytics_by_period=$(sqlite3 "$db_copy" "SELECT COUNT(*) FROM analytics_by_period;")
