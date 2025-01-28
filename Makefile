@@ -56,7 +56,14 @@ compact:
 	printf "✅ Total post-compaction rows in \`analytics_by_period\` table: %'d\n" $$total_rows
 
 # Run a query against the `analytics_by_period` table.
-# Example: `make run query=get-single-total-executions unit=hour window="-7 days"`
-# Example: `make run query=get-single-total-executions unit=hour window="-7 days" workflow=832F64FEB2F71CDE686BB1EDDE88A4FB`
+# Examples: 
+#    make run query=get-single-total-executions unit=hour window="-7 days"
+#    make run query=get-single-total-executions unit=hour window="-7 days" workflow=832F64FEB2F71CDE686BB1EDDE88A4FB
+#    make run query=get-breakdown-by-workflow window="-7 days" limit=35 offset=0
 run:
-	@sed "s/:unit/'$(unit)'/g; s/:window/'$(window)'/g; s/:workflow_id/$(if $(workflow),'$(workflow)',NULL)/g" queries/$(query).sql | sqlite3 $(DB_FILEPATH)
+	@sed "s/:unit/'$(unit)'/g; \
+	s/:window/'$(window)'/g; \
+	s/:workflow_id/$(if $(workflow),'$(workflow)',NULL)/g; \
+	s/:limit/$(if $(limit),$(limit),15)/g; \
+	s/:offset/$(if $(offset),$(offset),0)/g" \
+	queries/$(query).sql | sqlite3 $(DB_FILEPATH)
