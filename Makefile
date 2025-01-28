@@ -6,7 +6,7 @@ setup: nuke create populate
 
 # Remove the benchmark DB.
 nuke:
-	@rm $(DB_FILEPATH)
+	@rm $(DB_FILEPATH) || true
 
 # Start n8n to create an empty sqlite DB with all migrations applied.
 create:
