@@ -25,12 +25,11 @@ measure-disk-space:
 	@chmod +x ./measure-disk-space.sh
 	@./measure-disk-space.sh $(DB_FILEPATH)
 
-# Populate the benchmark DB with workflows, executions and analytics events.
-# Defaults: 500 workflows, 100k executions, 1m analytics events
-# Example: `make populate workflows=700 executions=200,000 analytics=500,000`
+# Populate the benchmark DB with workflows and analytics events.
+# Defaults: 500 workflows, 1m analytics events
+# Example: `make populate workflows=700 analytics=500,000`
 populate:
 	@make workflows n=$(or $(workflows),500)
-	@make executions n=$(or $(executions),100000)
 	@make analytics n=$(or $(analytics),1000000)
 
 # Populate the `workflow_entity` table in the benchmark DB.
@@ -38,12 +37,6 @@ workflows:
 	@sed 's/:num_workflows/$(shell echo $(n) | tr -d ',')/g' queries/populate-workflows.sql | sqlite3 $(DB_FILEPATH)
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM workflow_entity;"); \
 	printf "✅ Total rows in \`workflow_entity\` table: %'d\n" $$total_rows
-
-# Populate the `execution_entity` table in the benchmark DB.
-executions:
-	@sed 's/:num_executions/$(shell echo $(n) | tr -d ',')/g' queries/populate-executions.sql | sqlite3 $(DB_FILEPATH)
-	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM execution_entity;"); \
-	printf "✅ Total rows in \`execution_entity\` table: %'d\n" $$total_rows
 
 # Populate the `analytics` table in the benchmark DB.
 analytics:
