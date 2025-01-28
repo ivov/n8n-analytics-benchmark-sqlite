@@ -26,7 +26,7 @@ benchmark_query() {
   local cli_command=$3
   
   echo "Benchmarking: $query_description"
-  hyperfine --warmup 1 --runs 3 "$cli_command" # TODO: Decide on warmups and iterations
+  hyperfine --warmup 2 --runs 5 "$cli_command" # TODO: Decide on warmups and iterations
   echo "----------------------------------------"
 }
 
