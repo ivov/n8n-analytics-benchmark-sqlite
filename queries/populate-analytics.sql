@@ -1,6 +1,6 @@
 CREATE TABLE analytics (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  workflowId VARCHAR(16) REFERENCES workflow_entity(id) ON DELETE SET NULL, -- preserve analytics on workflow deletion
+  workflowId VARCHAR(16), -- no reference so we don't remove the field or row on workflow deletions
   type TEXT NOT NULL, -- time_saved_min, runtime_ms, success, failure
   value INTEGER, -- integer for minutes, integer for milliseconds, always 1, always 1
   timestamp TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))
