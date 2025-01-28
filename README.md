@@ -17,7 +17,7 @@ Events per year assuming 10 events per execution, based on real user data points
 
 ## TODO
 
-- [ ] make cross platform @danny
+- [x] make cross platform @danny
 - [ ] randomize workflow ids @danny
 - [ ] sanity check data @danny
 - [ ] use hyperfine to benchmark each query for both variants (see slack) @ivan
