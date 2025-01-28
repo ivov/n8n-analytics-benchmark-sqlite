@@ -8,6 +8,7 @@ WINDOW="-7 days" # TODO: Decide on window for all runs
 # TODO: Surface which compaction logic this report corresponds to
 
 RANDOM_WORKFLOW_ID=$(sqlite3 "$DB_PATH" "SELECT id FROM workflow_entity LIMIT 1;")
+# TODO: Project ID param
 
 benchmark_query() {
   local query_name=$1
