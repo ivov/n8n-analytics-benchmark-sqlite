@@ -41,6 +41,7 @@ workflows:
 # Populate the `analytics` table in the benchmark DB.
 analytics:
 	@sed 's/:num_events/$(shell echo $(n) | tr -d ',')/g' queries/populate-analytics.sql | sqlite3 $(DB_FILEPATH)
+	@chmod +x randomize-workflow-ids.sh && ./randomize-workflow-ids.sh $(DB_FILEPATH)
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics;"); \
 	printf "✅ Total pre-compaction rows in \`analytics\` table: %'d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
