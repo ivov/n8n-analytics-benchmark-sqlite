@@ -18,7 +18,6 @@ Events per year assuming 10 events per execution, based on real user data points
 ## TODO
 
 - [ ] sanity check data @danny
-- [ ] use hyperfine to benchmark each query for both variants (see slack) @ivan
 - [ ] add metadata table and update queries to join that table
     - workflow name and project id
 - [ ] update or parameterize queries to allow filtering for project
