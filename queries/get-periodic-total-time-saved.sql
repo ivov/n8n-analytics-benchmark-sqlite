@@ -1,6 +1,6 @@
 SELECT 
   periodStart,
-  SUM(value) as time_saved_minutes
+  SUM(count) as time_saved_minutes
 FROM analytics_by_period
 WHERE
   workflowId = COALESCE(:workflow_id, workflowId)

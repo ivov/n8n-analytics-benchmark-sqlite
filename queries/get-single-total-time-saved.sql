@@ -1,4 +1,4 @@
-SELECT SUM(value)
+SELECT SUM(count)
 FROM analytics_by_period
 WHERE
   workflowId = COALESCE(:workflow_id, workflowId)
