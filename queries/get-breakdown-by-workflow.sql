@@ -13,6 +13,7 @@ WITH breakdown_by_workflow AS (
   FROM analytics_metadata
   LEFT JOIN analytics_by_period ON analytics_metadata.workflowId = analytics_by_period.workflowId
   WHERE analytics_by_period.periodStart >= DATETIME('now', :window)
+  -- AND projectId = COALESCE(:project_id, projectId)
   GROUP BY analytics_metadata.workflowId
   HAVING total_executions > 0
 )
