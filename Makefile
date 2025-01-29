@@ -1,8 +1,14 @@
 DB_FILEPATH := $(HOME)/.n8n/analytics-benchmark.sqlite
 DB_FILENAME := $(notdir $(DB_FILEPATH))
 N8N_VERSION := 1.75.2
+CONTAINER_NAME := $(shell openssl rand -base64 24 | tr -dc 'a-zA-Z0-9')
 
 setup: nuke create populate
+
+setup-multiple:
+	parallel 'make DB_FILEPATH=~/.n8n/analytics-benchmark-{1}x-v{2}.sqlite setup analytics={1}000000 compact version={2}' \
+	::: 1 2 4 8 16 \
+	::: 1 2
 
 # Remove the benchmark DB.
 nuke:
@@ -10,12 +16,12 @@ nuke:
 
 # Start n8n to create an empty sqlite DB with all migrations applied.
 create:
-	@docker run --rm --name n8n-$(N8N_VERSION) -p 5678:5678 \
+	@docker run --rm --name '$(CONTAINER_NAME)' \
 	-v ~/.n8n:/home/node/.n8n \
 	-e DB_SQLITE_DATABASE=/home/node/.n8n/$(DB_FILENAME) \
 	n8nio/n8n:$(N8N_VERSION) > /dev/null & \
-	while ! docker logs n8n-$(N8N_VERSION) 2>&1 | grep -q "Editor is now accessible"; do sleep 1; done && \
-	docker stop n8n-$(N8N_VERSION) > /dev/null && \
+	while ! docker logs '$(CONTAINER_NAME)' 2>&1 | grep -q "Editor is now accessible"; do sleep 1; done && \
+	docker stop $(CONTAINER_NAME) > /dev/null && \
 	echo "✅ DB set up at: $(DB_FILEPATH)"
 
 # Make a copy of the benchmark DB, reduce to only `analytics` and `analytics_by_period`
