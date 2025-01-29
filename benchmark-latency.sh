@@ -25,7 +25,7 @@ benchmark_query() {
   local query_command=$3
   
   echo "$query_description"
-  hyperfine --warmup 2 --runs 5 "$query_command" # TODO: Decide on warmups and iterations
+  hyperfine --warmup 2 --runs 5 "$query_command"
 }
 
 # total benchmarks: 26
