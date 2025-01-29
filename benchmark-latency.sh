@@ -5,6 +5,7 @@
 # - window for all runs
 # - warmups for all runs
 # - iterations for all runs
+# - number of analytics, workflows, etc. to populate
 
 DB_FILEPATH=$1
 UNIT="hour" 
