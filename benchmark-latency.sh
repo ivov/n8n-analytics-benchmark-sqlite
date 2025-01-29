@@ -14,9 +14,6 @@ fi
 UNIT="hour" # TODO: Decide on unit for all runs
 WINDOW="-7 days" # TODO: Decide on window for all runs
 
-# TODO: Surface which compaction logic this report corresponds to
-# TODO: Make results parseable? Send results to Google Sheet?
-
 RANDOM_WORKFLOW_ID=$(sqlite3 "$DB_PATH" "SELECT id FROM workflow_entity LIMIT 1;")
 # TODO: Project ID param
 
