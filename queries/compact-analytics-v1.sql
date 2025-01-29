@@ -58,4 +58,7 @@ GROUP BY workflowId, type, date(timestamp, 'weekday 0', '-7 days');
 
 DELETE FROM analytics;
 
+INSERT INTO settings (key, value, loadOnStartup)
+VALUES ('compaction_version', '1', 0);
+
 COMMIT;

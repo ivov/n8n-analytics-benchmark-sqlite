@@ -11,14 +11,11 @@ UNIT="hour"
 WINDOW="-7 days"
 RANDOM_WORKFLOW_ID=$(sqlite3 "$DB_FILEPATH" "SELECT id FROM workflow_entity LIMIT 1;")
 RANDOM_PROJECT_ID=$(sqlite3 "$DB_FILEPATH" "SELECT id FROM project LIMIT 1;")
+COMPACTION_VERSION=$(sqlite3 "$DB_FILEPATH" "SELECT value FROM settings WHERE key = 'compaction_version';")
 
-check_analytics_tables() {
-  analytics_count=$(sqlite3 "$DB_FILEPATH" "SELECT COUNT(*) FROM analytics;")
-  analytics_by_period_count=$(sqlite3 "$DB_FILEPATH" "SELECT COUNT(*) FROM analytics_by_period;")
-  analytics_metadata_count=$(sqlite3 "$DB_FILEPATH" "SELECT COUNT(*) FROM analytics_metadata;")
-
-  if [ "$analytics_count" -gt 0 ] || [ "$analytics_by_period_count" -eq 0 ] || [ "$analytics_metadata_count" -eq 0 ]; then
-    echo "Please run 'make compact version=n' before benchmarking"
+ensure_compaction() {
+  if [ -z "$COMPACTION_VERSION" ]; then
+    echo "ERROR: Uncompacted data. Please run \`make compact version=n\` before benchmarking"
     exit 1
   fi
 }
@@ -39,6 +36,8 @@ benchmark_query() {
 # 4 get-single-*-in-project run x1
 
 benchmark_all_queries() {
+  echo "Benchmarking for data compacted with version $COMPACTION_VERSION"
+
  # query that accepts optional project ID
   benchmark_query "get-breakdown-by-workflow" \
   "Breakdown by workflow (all projects)" \
@@ -75,5 +74,5 @@ benchmark_all_queries() {
   done
 }
 
-check_analytics_tables
+ensure_compaction
 benchmark_all_queries
