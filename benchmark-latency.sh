@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# TODO: Decide on unit and window for all runs
+# TODO: Decide on 
+# - unit for all runs
+# - window for all runs
+# - warmups for all runs
+# - iterations for all runs
 
 DB_FILEPATH=$1
 UNIT="hour" 
@@ -58,9 +62,9 @@ benchmark_all_queries() {
     "$query (specific workflow)" \
     "make run query=$query unit='$UNIT' window='$WINDOW' workflow_id=$RANDOM_WORKFLOW_ID"
 
-    benchmark_query "$query" \
+    benchmark_query "$query-in-project" \
     "$query (specific project)" \
-    "make run query=$query unit='$UNIT' window='$WINDOW' project_id=$RANDOM_PROJECT_ID"
+    "make run query=$query-in-project unit='$UNIT' window='$WINDOW' project_id=$RANDOM_PROJECT_ID"
   done
 }
 
