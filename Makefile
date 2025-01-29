@@ -26,10 +26,12 @@ measure-disk-space:
 	@./measure-disk-space.sh $(DB_FILEPATH)
 
 # Populate the benchmark DB with workflows and analytics events.
-# Defaults: 500 workflows, 1m analytics events
-# Example: `make populate workflows=700 analytics=500,000`
+# Defaults: 500 workflows, 50 projects, 1m analytics events
+# Example: 
+#   make populate workflows=700 projects=100 analytics=500,000
 populate:
 	@make workflows n=$(or $(workflows),500)
+	@make projects n=$(or $(projects),50)
 	@make analytics n=$(or $(analytics),1000000)
 
 # Populate the `workflow_entity` table in the benchmark DB.
@@ -47,6 +49,10 @@ analytics:
 	printf "✅ Total pre-compaction rows in \`analytics\` table: %'d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
 	printf "✅ Total pre-compaction rows in \`analytics_by_period\` table: %'d\n" $$total_rows
+
+# Populate the `project` table with team projects in the benchmark DB.
+projects:
+	@sed 's/:num_projects/$(shell echo $(n) | tr -d ',')/g' queries/populate-projects.sql | sqlite3 $(DB_FILEPATH)
 
 # Process all `analytics` rows into `analytics_by_period` summaries.
 # Example: make compact version=2
