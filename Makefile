@@ -31,7 +31,7 @@ measure-disk-space:
 #   make populate workflows=700 projects=100 analytics=500,000
 populate:
 	@make workflows n=$(if $(workflows),$(workflows),500)
-	@make projects n=$(if $(projects),$(projects),500)
+	@make projects n=$(if $(projects),$(projects),50)
 	@make analytics n=$(if $(analytics),$(analytics),1000000)
 
 # Populate the `workflow_entity` table in the benchmark DB.
