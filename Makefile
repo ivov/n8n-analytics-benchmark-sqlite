@@ -26,11 +26,13 @@ measure-disk-space:
 	@./measure-disk-space.sh $(DB_FILEPATH)
 
 # Populate the benchmark DB with workflows and analytics events.
-# Defaults: 500 workflows, 1m analytics events
-# Example: `make populate workflows=700 analytics=500,000`
+# Defaults: 500 workflows, 50 projects, 1m analytics events
+# Example: 
+#   make populate workflows=700 projects=100 analytics=500,000
 populate:
-	@make workflows n=$(or $(workflows),500)
-	@make analytics n=$(or $(analytics),1000000)
+	@make workflows n=$(if $(workflows),$(workflows),500)
+	@make projects n=$(if $(projects),$(projects),50)
+	@make analytics n=$(if $(analytics),$(analytics),1000000)
 
 # Populate the `workflow_entity` table in the benchmark DB.
 workflows:
@@ -48,9 +50,18 @@ analytics:
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
 	printf "✅ Total pre-compaction rows in \`analytics_by_period\` table: %'d\n" $$total_rows
 
+# Populate the `project` table with team projects in the benchmark DB.
+projects:
+	@sed 's/:num_projects/$(shell echo $(n) | tr -d ',')/g' queries/populate-projects.sql | sqlite3 $(DB_FILEPATH)
+
 # Process all `analytics` rows into `analytics_by_period` summaries.
+# Example: make compact version=2
 compact:
-	@sqlite3 $(DB_FILEPATH) < queries/repopulate-analytics-by-compaction.sql
+	@if [ -z "$(version)" ]; then \
+		echo "Error: version parameter required. Example: make compact version=1" >&2; \
+		exit 1; \
+	fi
+	@sqlite3 $(DB_FILEPATH) < queries/compact-analytics-v$(version).sql
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics;"); \
 	printf "✅ Total post-compaction rows in \`analytics\` table: %'d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
@@ -59,12 +70,14 @@ compact:
 # Run a query against the `analytics_by_period` table.
 # Examples: 
 #    make run query=get-single-total-executions unit=hour window="-7 days"
-#    make run query=get-single-total-executions unit=hour window="-7 days" workflow=832F64FEB2F71CDE686BB1EDDE88A4FB
+#    make run query=get-single-total-executions unit=hour window="-7 days" workflow_id=832F64FEB2F71CDE686BB1EDDE88A4FB
+#    make run query=get-breakdown-by-workflow window="-7 days" project_id=E0E058A25F43D1640267B4963CC5FE7A
 #    make run query=get-breakdown-by-workflow window="-7 days" limit=35 offset=0
 run:
 	@sed "s/:unit/'$(unit)'/g; \
 	s/:window/'$(window)'/g; \
-	s/:workflow_id/$(if $(workflow),'$(workflow)',NULL)/g; \
+	s/:workflow_id/$(if $(workflow_id),'$(workflow_id)',NULL)/g; \
+	s/:project_id/$(if $(project_id),'$(project_id)',NULL)/g; \
 	s/:limit/$(if $(limit),$(limit),15)/g; \
 	s/:offset/$(if $(offset),$(offset),0)/g" \
 	queries/$(query).sql | sqlite3 $(DB_FILEPATH)
