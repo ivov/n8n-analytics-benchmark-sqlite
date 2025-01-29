@@ -70,12 +70,14 @@ compact:
 # Run a query against the `analytics_by_period` table.
 # Examples: 
 #    make run query=get-single-total-executions unit=hour window="-7 days"
-#    make run query=get-single-total-executions unit=hour window="-7 days" workflow=832F64FEB2F71CDE686BB1EDDE88A4FB
+#    make run query=get-single-total-executions unit=hour window="-7 days" workflow_id=832F64FEB2F71CDE686BB1EDDE88A4FB
+#    make run query=get-breakdown-by-workflow window="-7 days" project_id=E0E058A25F43D1640267B4963CC5FE7A
 #    make run query=get-breakdown-by-workflow window="-7 days" limit=35 offset=0
 run:
 	@sed "s/:unit/'$(unit)'/g; \
 	s/:window/'$(window)'/g; \
-	s/:workflow_id/$(if $(workflow),'$(workflow)',NULL)/g; \
+	s/:workflow_id/$(if $(workflow_id),'$(workflow_id)',NULL)/g; \
+	s/:project_id/$(if $(project_id),'$(project_id)',NULL)/g; \
 	s/:limit/$(if $(limit),$(limit),15)/g; \
 	s/:offset/$(if $(offset),$(offset),0)/g" \
 	queries/$(query).sql | sqlite3 $(DB_FILEPATH)
