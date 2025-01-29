@@ -4,8 +4,7 @@ SELECT
 FROM analytics_by_period a
 JOIN analytics_metadata m ON a.workflowId = m.workflowId
 WHERE
-  a.workflowId = COALESCE(:workflow_id, a.workflowId)
-  AND m.projectId = COALESCE(:project_id, m.projectId)
+  m.projectId = :project_id
   AND type = 'failure' 
   AND periodUnit = :unit
   AND periodStart >= DATETIME('now', :window)
