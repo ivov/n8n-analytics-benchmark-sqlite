@@ -1,57 +1,68 @@
 #!/bin/bash
 
-DB_PATH=$1
+# TODO: Decide on unit and window for all runs
 
-analytics_count=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM analytics;")
-analytics_by_period_count=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM analytics_by_period;")
+DB_FILEPATH=$1
+UNIT="hour" 
+WINDOW="-7 days"
+RANDOM_WORKFLOW_ID=$(sqlite3 "$DB_FILEPATH" "SELECT id FROM workflow_entity LIMIT 1;")
+RANDOM_PROJECT_ID=$(sqlite3 "$DB_FILEPATH" "SELECT id FROM project LIMIT 1;")
 
-if [ "$analytics_count" -gt 0 ] || [ "$analytics_by_period_count" -eq 0 ]; then
-  echo "Error: The analytics table must be empty and analytics_by_period must have rows."
-  echo "Please run 'make compact' before benchmarking."
-  exit 1
-fi
+check_analytics_tables() {
+  analytics_count=$(sqlite3 "$DB_FILEPATH" "SELECT COUNT(*) FROM analytics;")
+  analytics_by_period_count=$(sqlite3 "$DB_FILEPATH" "SELECT COUNT(*) FROM analytics_by_period;")
+  analytics_metadata_count=$(sqlite3 "$DB_FILEPATH" "SELECT COUNT(*) FROM analytics_metadata;")
 
-UNIT="hour" # TODO: Decide on unit for all runs
-WINDOW="-7 days" # TODO: Decide on window for all runs
-
-RANDOM_WORKFLOW_ID=$(sqlite3 "$DB_PATH" "SELECT id FROM workflow_entity LIMIT 1;")
-# TODO: Project ID param
-
-benchmark_query() {
-  local query_name=$1
-  local query_description=$2
-  local cli_command=$3
-  
-  echo "Benchmarking: $query_description"
-  hyperfine --warmup 2 --runs 5 "$cli_command" # TODO: Decide on warmups and iterations
-  echo "----------------------------------------"
+  if [ "$analytics_count" -gt 0 ] || [ "$analytics_by_period_count" -eq 0 ] || [ "$analytics_metadata_count" -eq 0 ]; then
+    echo "Please run 'make compact version=n' before benchmarking"
+    exit 1
+  fi
 }
 
-# query that does not accept workflow ID
-benchmark_query "get-breakdown-by-workflow" \
-  "Breakdown by workflow" \
+benchmark_query() {
+  local query_description=$2
+  local query_command=$3
+  
+  echo "$query_description"
+  hyperfine --warmup 2 --runs 5 "$query_command" # TODO: Decide on warmups and iterations
+}
+
+benchmark_all_queries() {
+ # query that accepts optional project ID
+  benchmark_query "get-breakdown-by-workflow" \
+  "Breakdown by workflow (all projects)" \
   "make run query=get-breakdown-by-workflow window='$WINDOW'"
 
-# queries that accept optional workflow ID
-queries=(
-  "get-periodic-total-executions"
-  "get-periodic-total-failed-executions"
-  "get-periodic-total-failure-rate"
-  "get-periodic-total-time-saved"
-  "get-single-total-executions"
-  "get-single-total-failed-executions"
-  "get-single-total-failure-rate"
-  "get-single-total-time-saved"
-)
+  benchmark_query "get-breakdown-by-workflow" \
+  "Breakdown by workflow (specific project)" \
+  "make run query=get-breakdown-by-workflow window='$WINDOW' project_id=$RANDOM_PROJECT_ID"
 
-for query in "${queries[@]}"; do
-  # without workflow ID
-  benchmark_query "$query" \
+ # queries that accept optional workflow ID or optional project ID
+  queries=(
+    "get-periodic-total-executions"
+    "get-periodic-total-failed-executions" 
+    "get-periodic-total-failure-rate"
+    "get-periodic-total-time-saved"
+    "get-single-total-executions"
+    "get-single-total-failed-executions"
+    "get-single-total-failure-rate"
+    "get-single-total-time-saved"
+  )
+
+  for query in "${queries[@]}"; do
+    benchmark_query "$query" \
     "$query (all workflows)" \
     "make run query=$query unit='$UNIT' window='$WINDOW'"
-  
-  # with workflow ID
-  benchmark_query "$query" \
+   
+    benchmark_query "$query" \
     "$query (specific workflow)" \
-    "make run query=$query unit='$UNIT' window='$WINDOW' workflow=$RANDOM_WORKFLOW_ID"
-done
+    "make run query=$query unit='$UNIT' window='$WINDOW' workflow_id=$RANDOM_WORKFLOW_ID"
+
+    benchmark_query "$query" \
+    "$query (specific project)" \
+    "make run query=$query unit='$UNIT' window='$WINDOW' project_id=$RANDOM_PROJECT_ID"
+  done
+}
+
+check_analytics_tables
+benchmark_all_queries
