@@ -6,7 +6,7 @@ db_copy="${db_file}.copy"
 cp "$db_file" "$db_copy"
 
 # Drop non-analytics tables
-tables=$(sqlite3 "$db_copy" ".tables" | tr ' ' '\n' | grep -vE "^(sqlite_sequence|analytics|analytics_by_period)$")
+tables=$(sqlite3 "$db_copy" ".tables" | tr ' ' '\n' | grep -vE "^(sqlite_sequence|analytics|analytics_by_period|analytics_metadata)$")
 for table in $tables; do
   sqlite3 "$db_copy" "DROP TABLE $table;"
 done
