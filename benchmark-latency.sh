@@ -31,6 +31,13 @@ benchmark_query() {
   hyperfine --warmup 2 --runs 5 "$query_command" # TODO: Decide on warmups and iterations
 }
 
+# total benchmarks: 26
+# 1 get-breakdown-by-workflow runs x2
+# 4 get-periodic-* run x2
+# 4 get-single-* run x2
+# 4 get-periodic-*-in-project run x1
+# 4 get-single-*-in-project run x1
+
 benchmark_all_queries() {
  # query that accepts optional project ID
   benchmark_query "get-breakdown-by-workflow" \
