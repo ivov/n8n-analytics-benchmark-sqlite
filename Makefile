@@ -5,6 +5,10 @@ CONTAINER_NAME := $(shell openssl rand -base64 24 | tr -dc 'a-zA-Z0-9')
 
 setup: nuke create populate
 
+benchmark-baseline:
+	hyperfine --warmup 2 --export-csv baseline.csv \
+		'make run query=baseline'
+
 benchmark-queries:
 	hyperfine --warmup 2 --export-csv result-queries.csv \
 		'make run query=get-breakdown-by-workflow' \
