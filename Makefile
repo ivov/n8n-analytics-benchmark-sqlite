@@ -42,6 +42,7 @@ workflows:
 
 # Populate the `analytics` table in the benchmark DB.
 analytics:
+	@echo 'Randomizing, please wait...'
 	@sed 's/:num_events/$(shell echo $(n) | tr -d ',')/g' queries/populate-analytics.sql | sqlite3 $(DB_FILEPATH)
 	@chmod +x randomize-workflow-ids.sh && ./randomize-workflow-ids.sh $(DB_FILEPATH)
 	@cat queries/populate-analytics-metadata.sql | sqlite3 $(DB_FILEPATH)
@@ -81,3 +82,6 @@ run:
 	s/:limit/$(if $(limit),$(limit),15)/g; \
 	s/:offset/$(if $(offset),$(offset),0)/g" \
 	queries/$(query).sql | sqlite3 $(DB_FILEPATH)
+
+benchmark-latency:
+	@chmod +x ./benchmark-latency.sh && ./benchmark-latency.sh $(DB_FILEPATH)
