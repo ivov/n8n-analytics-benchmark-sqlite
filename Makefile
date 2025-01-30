@@ -31,7 +31,7 @@ benchmark-events:
 		--parameter-list events 1,2,4,8,16 \
 		--parameter-list version 1,2 \
 		--command-name 'v{version} - events: {events}' \
-		'make DB_FILEPATH=~/.n8n/analytics-benchmark-events{events}-v{version}.sqlite run query=${query}' \
+		'make DB_FILEPATH=~/.n8n/analytics-benchmark-events{events}-v{version}.sqlite run query=${query}'
 
 setup-workflow-benchmark:
 	@parallel 'make DB_FILEPATH=~/.n8n/analytics-benchmark-wfs{1}-v{2}.sqlite setup workflows={1} compact version={2}' \
@@ -43,19 +43,19 @@ benchmark-workflows:
 		--parameter-list wfs 125,250,500,1000 \
 		--parameter-list version 1,2 \
 		--command-name 'v{version} - wfs: {wfs}' \
-		'make DB_FILEPATH=~/.n8n/analytics-benchmark-wfs{wfs}-v{version}.sqlite run query=${query}' \
+		'make DB_FILEPATH=~/.n8n/analytics-benchmark-wfs{wfs}-v{version}.sqlite run query=${query}'
 
-setup-workflow-projects:
+setup-projects-benchmark:
 	@parallel 'make DB_FILEPATH=~/.n8n/analytics-benchmark-projects{1}-v{2}.sqlite setup projects={1} compact version={2}' \
 	::: 50 100 200 400 800 \
 	::: 1 2
 
 benchmark-projects:
 	hyperfine --warmup 2 --export-csv result-projects-${query}.csv \
-		--parameter-list projects 125,250,500,1000 \
+		--parameter-list projects 50,100,200,400,800 \
 		--parameter-list version 1,2 \
 		--command-name 'v{version} - projects: {projects}' \
-		'make DB_FILEPATH=~/.n8n/analytics-benchmark-projects{projects}-v{version}.sqlite run query=${query}' \
+		'make DB_FILEPATH=~/.n8n/analytics-benchmark-projects{projects}-v{version}.sqlite run query=${query}'
 
 # Remove the benchmark DB.
 nuke:
