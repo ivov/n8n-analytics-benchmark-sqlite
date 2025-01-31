@@ -129,7 +129,7 @@ compact:
 #    make run query=get-breakdown-by-workflow window="-7 days" limit=35 offset=0
 run:
 	@sed "s/:unit/'$(unit)'/g; \
-	s/:window/$(if $(window), '$(window)', '-7 days')/g; \
+	s/:window/$(if $(window), '$(window)', '-1 year')/g; \
 	s/:workflow_id/$(if $(workflow_id),'$(workflow_id)',NULL)/g; \
 	s/:project_id/$(if $(project_id),'$(project_id)',NULL)/g; \
 	s/:limit/$(if $(limit),$(limit),15)/g; \

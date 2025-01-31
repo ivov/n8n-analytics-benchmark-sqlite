@@ -33,7 +33,7 @@ WHERE type = 'time_saved_min';
 
 CREATE TABLE analytics_by_period (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  workflowId VARCHAR(16) REFERENCES workflow_entity(id) ON DELETE SET NULL, -- preserve analytics on workflow deletion
+  workflowId VARCHAR(16), -- preserve analytics on workflow deletion
   type TEXT NOT NULL, -- see analytics.type
   count INTEGER NOT NULL, -- count of events within aggregation period
   periodUnit TEXT NOT NULL, -- unit of aggregation period: hour, day, week 

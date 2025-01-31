@@ -9,7 +9,7 @@
 
 DB_FILEPATH=$1
 UNIT="hour" 
-WINDOW="-7 days"
+WINDOW="-1 years"
 RANDOM_WORKFLOW_ID=$(sqlite3 "$DB_FILEPATH" "SELECT id FROM workflow_entity LIMIT 1;")
 RANDOM_PROJECT_ID=$(sqlite3 "$DB_FILEPATH" "SELECT id FROM project LIMIT 1;")
 COMPACTION_VERSION=$(sqlite3 "$DB_FILEPATH" "SELECT value FROM settings WHERE key = 'compaction_version';")
