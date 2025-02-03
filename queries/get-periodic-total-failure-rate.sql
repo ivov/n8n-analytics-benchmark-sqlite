@@ -1,30 +1,12 @@
 SELECT 
-  p.periodStart,
-  CAST(COALESCE(f.failures, 0) AS FLOAT) / COALESCE(t.total, 1) as failure_rate
-FROM (
-  SELECT DISTINCT periodStart
-  FROM analytics_by_period 
-  WHERE periodUnit = :unit
+  periodStart,
+  CAST(SUM(CASE WHEN type = 'failure' THEN count ELSE 0 END) AS FLOAT) /
+    SUM(count) as failure_rate
+FROM analytics_by_period ap
+WHERE 
+  type IN ('success', 'failure')
   AND periodStart >= datetime('now', :window)
-) p
-LEFT JOIN (
-  SELECT periodStart, SUM(count) as failures
-  FROM analytics_by_period
-  WHERE 
-    workflowId = COALESCE(:workflow_id, workflowId)
-    AND type = 'failure'
-    AND periodUnit = :unit
-    AND periodStart >= datetime('now', :window)
-    GROUP BY periodStart
-) f ON p.periodStart = f.periodStart
-LEFT JOIN (
-  SELECT periodStart, SUM(count) as total
-  FROM analytics_by_period
-  WHERE 
-    workflowId = COALESCE(:workflow_id, workflowId)
-    AND type IN ('success', 'failure')
-    AND periodUnit = :unit
-    AND periodStart >= datetime('now', :window)
-    GROUP BY periodStart
-) t ON p.periodStart = t.periodStart
-ORDER BY p.periodStart;
+  AND periodUnit = :unit
+  AND workflowId = COALESCE(:workflow_id, workflowId)
+GROUP BY periodStart
+ORDER BY periodStart;
