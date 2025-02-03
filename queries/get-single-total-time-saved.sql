@@ -1,7 +1,7 @@
 SELECT SUM(count)
-FROM analytics_by_period
+FROM analytics_by_period ap
 WHERE
-  workflowId = COALESCE(:workflow_id, workflowId)
-  AND type = 'time_saved_min'
+  ap.metaId = COALESCE((SELECT metaId from analytics_metadata WHERE workflowId = :workflow_id), ap.metaId)
+  AND type = 0
   AND periodUnit = :unit 
-  AND periodStart >= DATETIME('now', :window);
+  AND periodStart >= unixepoch(datetime('now', :window));
