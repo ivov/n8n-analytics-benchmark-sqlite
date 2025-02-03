@@ -10,8 +10,6 @@
 
 BEGIN TRANSACTION;
 
-DELETE FROM analytics_by_period;
-
 INSERT INTO analytics_by_period (metaId, type, count, periodUnit, periodStart)
 SELECT 
   metaId,
@@ -46,9 +44,9 @@ FROM analytics
 WHERE timestamp < datetime('now', '-90 days')
 GROUP BY metaId, type, date(timestamp, 'weekday 0', '-7 days');
 
--- DELETE FROM analytics;
+DELETE FROM analytics;
 
--- INSERT INTO settings (key, value, loadOnStartup)
--- VALUES ('compaction_version', '1', 0);
+INSERT INTO settings (key, value, loadOnStartup)
+VALUES ('compaction_version', '1', 0);
 
 COMMIT;
