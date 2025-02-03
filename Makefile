@@ -128,7 +128,7 @@ compact:
 #    make run query=get-breakdown-by-workflow window="-7 days" project_id=E0E058A25F43D1640267B4963CC5FE7A
 #    make run query=get-breakdown-by-workflow window="-7 days" limit=35 offset=0
 run:
-	@sed "s/:unit/'$(unit)'/g; \
+	sed "s/:unit/$(if $(unit),$(unit),'hour')/g; \
 	s/:window/$(if $(window), '$(window)', '-1 year')/g; \
 	s/:workflow_id/$(if $(workflow_id),'$(workflow_id)',NULL)/g; \
 	s/:project_id/$(if $(project_id),'$(project_id)',NULL)/g; \
