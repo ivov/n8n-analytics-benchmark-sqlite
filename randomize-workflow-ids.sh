@@ -19,9 +19,9 @@ if [ ${#workflow_ids[@]} -eq 0 ]; then
   exit 1
 fi
 
-sql_stmt="UPDATE analytics SET workflowId = CASE"
+sql_stmt="UPDATE analytics SET workflowId = CASE ABS(RANDOM() % ${#workflow_ids[@]})"
 for i in "${!workflow_ids[@]}"; do
-    sql_stmt+=" WHEN (ABS(RANDOM()) % ${#workflow_ids[@]}) = $i THEN '${workflow_ids[$i]}'"
+    sql_stmt+=" WHEN $i THEN '${workflow_ids[$i]}'"
 done
 sql_stmt+=" ELSE '${workflow_ids[0]}' END;"
 
