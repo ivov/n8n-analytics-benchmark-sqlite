@@ -95,10 +95,10 @@ workflows:
 
 # Populate the `analytics` table in the benchmark DB.
 analytics:
-	@echo 'Randomizing, please wait...'
-	@sed 's/:num_events/$(shell echo $(n) | tr -d ',')/g' queries/populate-analytics.sql | sqlite3 $(DB_FILEPATH)
-	@chmod +x randomize-workflow-ids.sh && ./randomize-workflow-ids.sh $(DB_FILEPATH)
+	@echo 'Populate metadata'
 	@cat queries/populate-analytics-metadata.sql | sqlite3 $(DB_FILEPATH)
+	@echo 'Populate analytics'
+	@sed 's/:num_events/$(shell echo $(n) | tr -d ',')/g' queries/populate-analytics.sql | sqlite3 $(DB_FILEPATH)
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics;"); \
 	printf "✅ Total pre-compaction rows in \`analytics\` table: %'d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
@@ -128,8 +128,8 @@ compact:
 #    make run query=get-breakdown-by-workflow window="-7 days" project_id=E0E058A25F43D1640267B4963CC5FE7A
 #    make run query=get-breakdown-by-workflow window="-7 days" limit=35 offset=0
 run:
-	sed "s/:unit/$(if $(unit),$(unit),'hour')/g; \
-	s/:window/$(if $(window), '$(window)', '-1 year')/g; \
+	sed "s/:unit/$(if $(unit),$(unit),0)/g; \
+	s/:window/$(if $(window),'$(window)','-1 year')/g; \
 	s/:workflow_id/$(if $(workflow_id),'$(workflow_id)',NULL)/g; \
 	s/:project_id/$(if $(project_id),'$(project_id)',NULL)/g; \
 	s/:limit/$(if $(limit),$(limit),15)/g; \

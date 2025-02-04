@@ -1,25 +1,18 @@
--- TODO: Should all columns be NOT NULL?
 CREATE TABLE analytics_metadata (
-  workflowId VARCHAR(16) PRIMARY KEY REFERENCES analytics_by_period (workflowId) ON DELETE CASCADE,
+  metaId INTEGER PRIMARY KEY AUTOINCREMENT,
+  workflowId VARCHAR(16) REFERENCES workflow_entity(id) ON DELETE SET NULL,
   workflowName VARCHAR(128) NOT NULL,
-  projectId VARCHAR(36),
-  projectName VARCHAR(255)
+  projectId VARCHAR(36) REFERENCES project(id) ON DELETE SET NULL,
+  projectName VARCHAR(255) NOT NULL
 );
 
 CREATE INDEX idx_analytics_metadata_project_id ON analytics_metadata(projectId);
 
-INSERT INTO analytics_metadata (workflowId, workflowName)
-SELECT DISTINCT
-  a.workflowId,
-  w.name as workflowName
-FROM analytics a
-JOIN workflow_entity w ON a.workflowId = w.id
-WHERE a.workflowId IS NOT NULL;
+INSERT INTO analytics_metadata (workflowId, workflowName, projectId, projectName)
+SELECT wf.id, wf.name, p.id, p.name
+FROM workflow_entity wf
+JOIN shared_workflow swf ON wf.id = swf.workflowId
+JOIN project p ON swf.projectId = p.id;
 
-UPDATE analytics_metadata SET
-  projectId = sw.projectId,
-  projectName = p.name
-FROM shared_workflow sw
-JOIN project p ON sw.projectId = p.id
-WHERE analytics_metadata.workflowId = sw.workflowId;
+
 

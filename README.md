@@ -16,3 +16,14 @@ Events per year assuming 10 events per execution, based on real user data points
 ```
 
 Test Result Napkin Math: 8 queries * 2 compaction schedule * 3 parameters (wf id, project id, nothing) = 48 sets of percentiles
+
+## ToDo Until Monday
+
+- [x] turn type into int
+- [x] store dates as epoch maybe?
+- [ ] run benchmark on cloud
+
+## ToDo For Implementation
+- [ ] evaluate if batching writes is worth it
+
+
