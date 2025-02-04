@@ -39,7 +39,7 @@ setup-workflow-benchmark:
 	::: 1
 
 benchmark-workflows:
-	hyperfine --warmup 2 --export-csv result-workflows-${query}.csv \
+	hyperfine --show-output --warmup 2 --export-csv result-workflows-${query}.csv \
 		--parameter-list wfs 125,250,500,1000 \
 		--parameter-list version 1 \
 		--command-name 'v{version} - wfs: {wfs}' \
