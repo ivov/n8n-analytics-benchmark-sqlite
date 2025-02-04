@@ -62,7 +62,8 @@ nuke:
 	@rm $(DB_FILEPATH) || true
 
 # Start n8n to create an empty sqlite DB with all migrations applied.
-# create:
+create:
+	@cp /data/database.sqlite /data/benchmark-dbs/analytics-benchmark.sqlite
 # 	@docker run --rm --name '$(CONTAINER_NAME)' \
 # 	-v ~/.n8n:/home/node/.n8n \
 # 	-e DB_SQLITE_DATABASE=/home/node/.n8n/$(DB_FILENAME) \
