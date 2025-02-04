@@ -23,12 +23,12 @@ benchmark-queries:
 
 setup-events-benchmark:
 	@parallel 'make DB_FILEPATH=/data/benchmark-dbs/analytics-benchmark-events{1}-v{2}.sqlite setup analytics={1}000000 compact version={2}' \
-	::: 1 2 4 8 16 \
+	::: 1 2 4 8 \
 	::: 1
 
 benchmark-events:
 	hyperfine --warmup 2 --export-csv result-events-${query}.csv \
-		--parameter-list events 1,2,4,8,16 \
+		--parameter-list events 1,2,4,8 \
 		--parameter-list version 1 \
 		--command-name 'v{version} - events: {events}' \
 		'make DB_FILEPATH=/data/benchmark-dbs/analytics-benchmark-events{events}-v{version}.sqlite run query=${query}'
