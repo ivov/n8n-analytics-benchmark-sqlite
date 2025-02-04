@@ -91,7 +91,7 @@ populate:
 workflows:
 	@sed 's/:num_workflows/$(shell echo $(n) | tr -d ',')/g' queries/populate-workflows.sql | sqlite3 $(DB_FILEPATH)
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM workflow_entity;"); \
-	printf "✅ Total rows in \`workflow_entity\` table: %'d\n" $$total_rows
+	printf "✅ Total rows in \`workflow_entity\` table: %d\n" $$total_rows
 
 # Populate the `analytics` table in the benchmark DB.
 analytics:
@@ -100,9 +100,9 @@ analytics:
 	@echo 'Populate analytics'
 	@sed 's/:num_events/$(shell echo $(n) | tr -d ',')/g' queries/populate-analytics.sql | sqlite3 $(DB_FILEPATH)
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics;"); \
-	printf "✅ Total pre-compaction rows in \`analytics\` table: %'d\n" $$total_rows
+	printf "✅ Total pre-compaction rows in \`analytics\` table: %d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
-	printf "✅ Total pre-compaction rows in \`analytics_by_period\` table: %'d\n" $$total_rows
+	printf "✅ Total pre-compaction rows in \`analytics_by_period\` table: %d\n" $$total_rows
 
 # Populate the `project` table with team projects in the benchmark DB.
 projects:
@@ -117,9 +117,9 @@ compact:
 	fi
 	@sqlite3 $(DB_FILEPATH) < queries/compact-analytics-v$(version).sql
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics;"); \
-	printf "✅ Total post-compaction rows in \`analytics\` table: %'d\n" $$total_rows
+	printf "✅ Total post-compaction rows in \`analytics\` table: %d\n" $$total_rows
 	@total_rows=$$(sqlite3 $(DB_FILEPATH) "SELECT COUNT(*) FROM analytics_by_period;"); \
-	printf "✅ Total post-compaction rows in \`analytics_by_period\` table: %'d\n" $$total_rows
+	printf "✅ Total post-compaction rows in \`analytics_by_period\` table: %d\n" $$total_rows
 
 # Run a query against the `analytics_by_period` table.
 # Examples: 
