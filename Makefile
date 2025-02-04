@@ -10,7 +10,7 @@ benchmark-baseline:
 		'make run query=baseline'
 
 benchmark-queries:
-	hyperfine --warmup 2 --export-csv result-queries.csv \
+	hyperfine --show-output --warmup 2 --export-csv result-queries.csv \
 		'make run query=get-breakdown-by-workflow' \
 		'make run query=get-periodic-total-executions' \
 		'make run query=get-periodic-total-failed-executions' \
